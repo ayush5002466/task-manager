@@ -33,7 +33,7 @@ class TaskManagerApplicationTests {
                                     "completed": false
                                 }
                                 """))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value("Test task"))
                 .andExpect(jsonPath("$.completed").value(false));
     }
@@ -129,7 +129,7 @@ class TaskManagerApplicationTests {
 
         mockMvc.perform(
                 delete("/tasks/" + id))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         mockMvc.perform(
                 get("/tasks/" + id))
