@@ -1,0 +1,33 @@
+services:
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: task-manager-postgres
+    environment:
+      POSTGRES_DB: task_manager
+      POSTGRES_USER: task_manager_user
+      POSTGRES_PASSWORD: task_manager_password
+    volumes:
+      - task-manager-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U task_manager_user -d task_manager"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  task-manager:
+    image: task-manager:1.0
+    container_name: task-manager-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/task_manager
+      SPRING_DATASOURCE_USERNAME: task_manager_user
+      SPRING_DATASOURCE_PASSWORD: task_manager_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  task-manager-data:
